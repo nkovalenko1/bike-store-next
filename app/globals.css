@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=fallback');
+
+@font-face {
+    font-family: 'Aeonik';
+    src:
+        url('/fonts/aeonik-regular.woff2') format('woff2'),
+        url('/fonts/aeonik-regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: fallback;
+}
+@font-face {
+    font-family: 'Aeonik';
+    src:
+        url('/fonts/aeonik-medium.woff2') format('woff2'),
+        url('/fonts/aeonik-medium.woff') format('woff');
+    font-weight: 500;
+    font-style: medium;
+    font-display: fallback;
+}
+@font-face {
+    font-family: 'Aeonik';
+    src:
+        url('/fonts/aeonik-bold.woff2') format('woff2'),
+        url('/fonts/aeonik-bold.woff') format('woff');
+    font-weight: 700;
+    font-style: bold;
+    font-display: fallback;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .nav-links {
+        @apply inline-flex w-full whitespace-nowrap py-2 text-sm font-medium uppercase text-black transition hover:text-gray lg:w-auto xl:text-base;
+    }
+    .nav-links.active {
+        @apply text-gray;
+    }
+    .footer-link {
+        @apply inline-flex text-sm text-gray transition hover:text-black xl:text-base/[19px];
+    }
+}
+
+
+.swiper-button-disabled {
+    @apply opacity-60 hover:!cursor-default;
+}
+
+/* Feedback-Swiper css */
+.marquee-swiper .swiper-wrapper {
+    @apply ease-linear flex;
+}
+
+/* Our stroy swiper */
+.our-story-swiper .swiper-slide-active .year-box > svg {
+    @apply text-success transition-all duration-1000;
+}
+.our-story-swiper .swiper-slide-active .year-box .year-text {
+    @apply text-white transition-all duration-1000;
+}
+.our-story-swiper .swiper-slide-active .story-active-shadow {
+    @apply block;
+}
+/* Cycle detail swiper */
+.cycle-detail-swiper .swiper-pagination{
+    @apply absolute bottom-5 sm:bottom-10 xl:bottom-[50px] inset-x-0 flex items-center gap-2.5 justify-center;
+}
+.cycle-detail-swiper .swiper-pagination .swiper-pagination-bullet {
+    @apply !size-2 lg:!size-2.5 !rounded-full !bg-black/10 shrink-0;
+}
+.cycle-detail-swiper .swiper-pagination .swiper-pagination-bullet-active {
+    @apply !bg-black;
+}
