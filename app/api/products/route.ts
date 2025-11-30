@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client";
 import { productQuerySchema, productSchema } from "@/lib/validations/product";
 import { handleApiError } from "@/lib/api/error-handler";
 import { successResponse, validationErrorResponse } from "@/lib/api/response";
+import { requireAdminSession } from "@/lib/api/middleware";
 import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
@@ -60,6 +61,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   try {
+    await requireAdminSession();
     const body = await request.json();
     const parsed = productSchema.safeParse(body);
 

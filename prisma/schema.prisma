@@ -14,6 +14,7 @@ model User {
   id            String    @id @default(cuid())
   email         String    @unique
   password      String
+  role          UserRole  @default(USER)
   name          String?
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
@@ -137,5 +138,10 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
 

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma/client";
 import { updateOrderStatusSchema } from "@/lib/validations/order";
 import { handleApiError } from "@/lib/api/error-handler";
-import { getUserId } from "@/lib/api/middleware";
+import { getUserId, requireAdminSession } from "@/lib/api/middleware";
 import {
   successResponse,
   notFoundResponse,
@@ -47,6 +47,7 @@ export async function GET(request: Request, { params }: Params) {
 
 export async function PUT(request: Request, { params }: Params) {
   try {
+    await requireAdminSession();
     const { id } = await params;
     const body = await request.json();
     const parsed = updateOrderStatusSchema.safeParse(body);

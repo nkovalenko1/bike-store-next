@@ -35,6 +35,9 @@ export function handleApiError(error: unknown) {
     if (error.message === "Unauthorized") {
       return errorResponse("Требуется авторизация", 401);
     }
+    if (error.message === "Forbidden") {
+      return errorResponse("Доступ запрещён", 403);
+    }
     return serverErrorResponse(error.message);
   }
 

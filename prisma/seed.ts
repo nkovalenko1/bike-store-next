@@ -16,6 +16,7 @@ async function main() {
     create: {
       email: adminEmail,
       password: adminPassword,
+      role: "ADMIN",
       name: "Администратор",
       emailVerified: new Date(),
     },
@@ -31,6 +32,7 @@ async function main() {
     create: {
       email: "test@example.com",
       password: testUserPassword,
+      role: "USER",
       name: "Тестовый Пользователь",
       emailVerified: new Date(),
     },

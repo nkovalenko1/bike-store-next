@@ -6,6 +6,7 @@ import {
   notFoundResponse,
   validationErrorResponse,
 } from "@/lib/api/response";
+import { requireAdminSession } from "@/lib/api/middleware";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -32,6 +33,7 @@ export async function GET(request: Request, { params }: Params) {
 
 export async function PUT(request: Request, { params }: Params) {
   try {
+    await requireAdminSession();
     const { id } = await params;
     const body = await request.json();
     const parsed = productSchema.partial().safeParse(body);
@@ -63,6 +65,7 @@ export async function PUT(request: Request, { params }: Params) {
 
 export async function DELETE(request: Request, { params }: Params) {
   try {
+    await requireAdminSession();
     const { id } = await params;
 
     await prisma.product.delete({ where: { id } });
