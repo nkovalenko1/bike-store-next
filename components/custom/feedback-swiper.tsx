@@ -14,6 +14,7 @@ export default function FeedbackSwiper() {
                         className="absolute bottom-0 right-0 z-[1] w-96 lg:w-[600px] xl:w-auto"
                         width={600}
                         height={600}
+                        style={{ height: "auto" }}
                     />
                     <span className="absolute inset-0 rounded-3xl bg-gradient-to-b from-transparent to-white/90 md:rounded-[40px] lg:rounded-[80px]"></span>
                     <h2 className="relative z-10 mx-auto w-full max-w-[740px] px-4 text-center text-2xl font-bold md:text-5xl/[60px] lg:text-6xl/[70px] 2xl:text-[70px]/[84px]">
