@@ -9,7 +9,8 @@ export const ScreenLoading = () => {
                 loading="lazy"
                 width={600}
                 height={600}
-                className="h-auto w-[600px]"
+                className="w-[600px]"
+                style={{ height: "auto" }}
             />
         </div>
     )

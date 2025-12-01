@@ -27,6 +27,7 @@ export default function Footer() {
                                             className="w-28 shrink-0 lg:w-[140px]"
                                             width={140}
                                             height={28}
+                                            style={{ height: "auto" }}
                                         />
                                     </Link>
                                     <div className="flex gap-3 text-white">
@@ -413,9 +414,10 @@ export default function Footer() {
                 <Image
                     src="/images/footer-logo2.svg"
                     alt="Bike Store"
-                    className="mx-auto h-full w-60 lg:w-96 xl:w-[693px]"
+                    className="mx-auto w-60 lg:w-96 xl:w-[693px]"
                     width={693}
                     height={200}
+                    style={{ height: "auto" }}
                 />
             </div>
         </footer>
