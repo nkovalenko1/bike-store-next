@@ -54,22 +54,26 @@ export async function POST(request: Request) {
 
     const newStatus = statusMap[Status] || "PROCESSING";
 
-    // Обновляем статус платежа
-    const updatedPayment = await prisma.payment.update({
-      where: { id: payment.id },
-      data: {
-        status: newStatus,
-        transactionId,
-      },
-    });
-
-    // Если платёж успешен, обновляем статус заказа
-    if (newStatus === "COMPLETED") {
-      await prisma.order.update({
-        where: { id: payment.orderId },
-        data: { status: "CONFIRMED" },
+    // Обновляем статус платежа и заказа в транзакции
+    const updatedPayment = await prisma.$transaction(async (tx) => {
+      const updated = await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: newStatus,
+          transactionId,
+        },
       });
-    }
+
+      // Если платёж успешен, обновляем статус заказа
+      if (newStatus === "COMPLETED") {
+        await tx.order.update({
+          where: { id: payment.orderId },
+          data: { status: "CONFIRMED" },
+        });
+      }
+
+      return updated;
+    });
 
     return successResponse({
       payment: updatedPayment,

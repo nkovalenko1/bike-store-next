@@ -58,6 +58,20 @@ export async function POST(request: Request) {
       return errorResponse("Корзина пуста", 400);
     }
 
+    // Проверяем наличие на складе
+    for (const item of cartItems) {
+      const stock = item.variant?.stock ?? item.product.stock;
+      if (stock < item.quantity) {
+        const productName = item.product.name;
+        const variantName = item.variant?.name;
+        const itemName = variantName ? `${productName} (${variantName})` : productName;
+        return errorResponse(
+          `Недостаточно товара "${itemName}" на складе. Доступно: ${stock}`,
+          400
+        );
+      }
+    }
+
     // Рассчитываем общую сумму
     const total = cartItems.reduce((sum, item) => {
       const price = item.variant?.price ?? item.product.price;
@@ -66,6 +80,27 @@ export async function POST(request: Request) {
 
     // Создаём заказ в транзакции
     const order = await prisma.$transaction(async (tx) => {
+      // Повторно проверяем и уменьшаем остатки атомарно
+      for (const item of cartItems) {
+        if (item.variantId) {
+          const variant = await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: { stock: { decrement: item.quantity } },
+          });
+          if (variant.stock < 0) {
+            throw new Error(`Недостаточно товара на складе: ${item.product.name}`);
+          }
+        } else {
+          const product = await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } },
+          });
+          if (product.stock < 0) {
+            throw new Error(`Недостаточно товара на складе: ${item.product.name}`);
+          }
+        }
+      }
+
       // Создаём заказ
       const newOrder = await tx.order.create({
         data: {

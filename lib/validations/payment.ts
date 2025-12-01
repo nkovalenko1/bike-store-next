@@ -23,7 +23,7 @@ export const webhookSchema = z.object({
   CardLastFour: z.string().optional(),
   CardType: z.string().optional(),
   Status: z.enum(["Completed", "Declined", "Authorized", "Refunded"]),
-  InvoiceId: z.string().optional(),
+  InvoiceId: z.string().min(1, "InvoiceId обязателен для обработки платежа"),
   AccountId: z.string().optional(),
   Email: z.string().email().optional(),
   Description: z.string().optional(),

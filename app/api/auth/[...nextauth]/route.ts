@@ -29,14 +29,14 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!user) {
-            console.error(`User not found: ${normalizedEmail}`);
+            console.error("Login failed: user not found");
             return null;
           }
 
           const isValid = await verifyPassword(password, user.password);
 
           if (!isValid) {
-            console.error(`Invalid password for user: ${normalizedEmail}`);
+            console.error("Login failed: invalid password");
             return null;
           }
 

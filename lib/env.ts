@@ -17,6 +17,7 @@ const envSchema = z.object({
 
   // Application
   NEXT_PUBLIC_APP_URL: z.string().url().min(1),
+  DEFAULT_CURRENCY: z.string().length(3).default("RUB"),
 });
 
 type Env = z.infer<typeof envSchema>;

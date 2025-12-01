@@ -1,7 +1,6 @@
 import crypto from "crypto";
+import { env } from "@/lib/env";
 
-const CLOUDPAYMENTS_PUBLIC_ID = process.env.CLOUDPAYMENTS_PUBLIC_ID!;
-const CLOUDPAYMENTS_SECRET_KEY = process.env.CLOUDPAYMENTS_SECRET_KEY!;
 const CLOUDPAYMENTS_API_URL = "https://api.cloudpayments.ru";
 
 interface ChargeRequest {
@@ -32,7 +31,7 @@ interface CloudPaymentsResponse {
 }
 
 function getAuthHeader(): string {
-  const credentials = `${CLOUDPAYMENTS_PUBLIC_ID}:${CLOUDPAYMENTS_SECRET_KEY}`;
+  const credentials = `${env.CLOUDPAYMENTS_PUBLIC_ID}:${env.CLOUDPAYMENTS_SECRET_KEY}`;
   return `Basic ${Buffer.from(credentials).toString("base64")}`;
 }
 
@@ -89,13 +88,19 @@ export function verifyWebhookSignature(
   body: string,
   signature: string
 ): boolean {
-  const hmac = crypto.createHmac("sha256", CLOUDPAYMENTS_SECRET_KEY);
+  const hmac = crypto.createHmac("sha256", env.CLOUDPAYMENTS_SECRET_KEY);
   hmac.update(body);
   const expectedSignature = hmac.digest("base64");
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+  
+  const sigBuffer = Buffer.from(signature);
+  const expectedBuffer = Buffer.from(expectedSignature);
+  
+  // Prevent timing attack by checking length first
+  if (sigBuffer.length !== expectedBuffer.length) {
+    return false;
+  }
+  
+  return crypto.timingSafeEqual(sigBuffer, expectedBuffer);
 }
 
 export function generatePaymentWidget(data: {
@@ -107,10 +112,10 @@ export function generatePaymentWidget(data: {
   accountId: string;
 }) {
   return {
-    publicId: CLOUDPAYMENTS_PUBLIC_ID,
+    publicId: env.CLOUDPAYMENTS_PUBLIC_ID,
     description: data.description,
     amount: data.amount,
-    currency: data.currency || "RUB",
+    currency: data.currency || env.DEFAULT_CURRENCY,
     invoiceId: data.orderId,
     accountId: data.accountId,
     email: data.email,

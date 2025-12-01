@@ -1,7 +1,12 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { hashPassword } from "@/lib/auth/password";
 import { registerSchema } from "@/lib/validations/auth";
+import { handleApiError } from "@/lib/api/error-handler";
+import {
+  successResponse,
+  validationErrorResponse,
+  errorResponse,
+} from "@/lib/api/response";
 
 export async function POST(request: Request) {
   try {
@@ -10,10 +15,7 @@ export async function POST(request: Request) {
     const parsed = registerSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Ошибка валидации", details: parsed.error.flatten() },
-        { status: 400 }
-      );
+      return validationErrorResponse(parsed.error.flatten());
     }
 
     const { email, password, name } = parsed.data;
@@ -23,10 +25,7 @@ export async function POST(request: Request) {
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: "Пользователь с таким email уже существует" },
-        { status: 409 }
-      );
+      return errorResponse("Пользователь с таким email уже существует", 409);
     }
 
     const hashedPassword = await hashPassword(password);
@@ -45,16 +44,9 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(
-      { message: "Регистрация успешна", user },
-      { status: 201 }
-    );
+    return successResponse(user, undefined, 201);
   } catch (error) {
-    console.error("Registration error:", error);
-    return NextResponse.json(
-      { error: "Ошибка при регистрации" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
 
