@@ -1,7 +1,20 @@
+import { config } from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { hashPassword } from "../lib/auth/password";
 
-const prisma = new PrismaClient();
+// Загружаем переменные окружения
+config();
+
+// Для seed используем адаптер, как в основном клиенте
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+
+const prisma = new PrismaClient({
+  adapter,
+  log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+});
 
 async function main() {
   console.log("🌱 Начало заполнения базы данных...");

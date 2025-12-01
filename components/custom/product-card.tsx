@@ -4,20 +4,24 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 interface ProductCardProps {
-    product: Product
+    product?: Product
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
     const productImages = Array.isArray(product?.images) ? product.images : []
     const mainImage = productImages[0] || '/images/placeholder.png'
-    const price = product.variants?.[0]?.price ?? product.price
+    const price = product?.variants?.[0]?.price ?? product?.price ?? 0
+
+    if (!product) {
+        return null
+    }
 
     return (
         <div className="flex shrink-0 flex-col overflow-hidden rounded-[10px] bg-[url(/images/collection-bg.jpg)] bg-cover bg-no-repeat h-full">
             <Link href={`/cycle-details/${product.id}`} className="group flex h-52 items-center justify-center p-2 lg:h-60 xl:h-[348px] shrink-0">
                 <Image
                     src={mainImage}
-                    alt={product.name}
+                    alt={product.name || ''}
                     className="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
                     width={404}
                     height={332}

@@ -13,34 +13,43 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const parsed = loginSchema.safeParse(credentials);
+        try {
+          const parsed = loginSchema.safeParse(credentials);
 
-        if (!parsed.success) {
+          if (!parsed.success) {
+            console.error("Login validation error:", parsed.error.flatten());
+            return null;
+          }
+
+          const { email, password } = parsed.data;
+          const normalizedEmail = email.toLowerCase().trim();
+
+          const user = await prisma.user.findUnique({
+            where: { email: normalizedEmail },
+          });
+
+          if (!user) {
+            console.error(`User not found: ${normalizedEmail}`);
+            return null;
+          }
+
+          const isValid = await verifyPassword(password, user.password);
+
+          if (!isValid) {
+            console.error(`Invalid password for user: ${normalizedEmail}`);
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("Authorize error:", error);
           return null;
         }
-
-        const { email, password } = parsed.data;
-
-        const user = await prisma.user.findUnique({
-          where: { email: email.toLowerCase() },
-        });
-
-        if (!user) {
-          return null;
-        }
-
-        const isValid = await verifyPassword(password, user.password);
-
-        if (!isValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
       },
     }),
   ],

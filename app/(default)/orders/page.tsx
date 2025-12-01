@@ -8,8 +8,6 @@ import ErrorMessage from "@/components/ui/error-message";
 import OrderDetails from "@/components/orders/order-details";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import helper from "@/lib/helper";
-import { Metadata } from "next";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);

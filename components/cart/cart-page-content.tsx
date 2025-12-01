@@ -17,7 +17,8 @@ export default function CartPageContent() {
 
   useEffect(() => {
     syncWithServer();
-  }, [syncWithServer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isLoading && items.length === 0) {
     return (

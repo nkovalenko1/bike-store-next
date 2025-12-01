@@ -3,12 +3,13 @@ import { useEffect } from "react";
 
 export function useAuth() {
   const store = useAuthStore();
+  const { isLoading, syncSession } = store;
 
   useEffect(() => {
-    if (store.isLoading) {
-      store.syncSession();
+    if (isLoading) {
+      syncSession();
     }
-  }, []);
+  }, [isLoading, syncSession]);
 
   return store;
 }

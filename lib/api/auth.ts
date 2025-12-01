@@ -8,13 +8,28 @@ export async function register(data: RegisterInput): Promise<void> {
 
 export async function login(data: LoginInput): Promise<void> {
   const result = await signIn("credentials", {
-    email: data.email,
+    email: data.email.toLowerCase().trim(),
     password: data.password,
     redirect: false,
   });
 
-  if (result?.error) {
-    throw new Error(result.error);
+  if (!result) {
+    throw new Error("Ошибка входа. Попробуйте снова.");
+  }
+
+  if (result.error) {
+    // Преобразуем стандартные ошибки NextAuth в понятные сообщения
+    const errorMessages: Record<string, string> = {
+      CredentialsSignin: "Неверный email или пароль",
+      Default: "Ошибка входа. Попробуйте снова.",
+    };
+
+    const errorMessage = errorMessages[result.error] || result.error || errorMessages.Default;
+    throw new Error(errorMessage);
+  }
+
+  if (!result.ok) {
+    throw new Error("Ошибка входа. Попробуйте снова.");
   }
 }
 

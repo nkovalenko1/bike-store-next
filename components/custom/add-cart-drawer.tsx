@@ -29,7 +29,8 @@ export default function AddcartDrawer({ button }: { button: React.ReactNode }) {
         if (isOpen) {
             syncWithServer()
         }
-    }, [isOpen, syncWithServer])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen])
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>

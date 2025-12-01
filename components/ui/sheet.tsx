@@ -4,6 +4,7 @@ import * as React from 'react'
 import * as SheetPrimitive from '@radix-ui/react-dialog'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { X } from 'lucide-react'
+import { useIsClient } from '@/lib/hooks/use-is-client'
 
 import { cn } from '@/lib/utils'
 
@@ -66,24 +67,30 @@ const SheetContent = React.forwardRef<
             ...props
         },
         ref,
-    ) => (
-        <SheetPortal>
-            <SheetOverlay />
-            <SheetPrimitive.Content
-                ref={ref}
-                className={cn(sheetVariants({ side }), className)}
-                {...props}
-            >
-                {children}
-                {isShowCloseButton && (
-                    <SheetPrimitive.Close className="ring-offset-background transition-opacityfocus:outline-none data-[state=open]:bg-secondary absolute right-4 top-6 rounded-sm hover:opacity-70 disabled:pointer-events-none">
-                        <X className="size-6 shrink-0" />
-                        <span className="sr-only">Close</span>
-                    </SheetPrimitive.Close>
-                )}
-            </SheetPrimitive.Content>
-        </SheetPortal>
-    ),
+    ) => {
+        const isClient = useIsClient();
+        
+        if (!isClient) return null;
+        
+        return (
+            <SheetPortal>
+                <SheetOverlay />
+                <SheetPrimitive.Content
+                    ref={ref}
+                    className={cn(sheetVariants({ side }), className)}
+                    {...props}
+                >
+                    {children}
+                    {isShowCloseButton && (
+                        <SheetPrimitive.Close className="ring-offset-background transition-opacityfocus:outline-none data-[state=open]:bg-secondary absolute right-4 top-6 rounded-sm hover:opacity-70 disabled:pointer-events-none">
+                            <X className="size-6 shrink-0" />
+                            <span className="sr-only">Close</span>
+                        </SheetPrimitive.Close>
+                    )}
+                </SheetPrimitive.Content>
+            </SheetPortal>
+        );
+    },
 )
 SheetContent.displayName = SheetPrimitive.Content.displayName
 
