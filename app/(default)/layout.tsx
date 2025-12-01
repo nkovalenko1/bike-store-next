@@ -4,6 +4,7 @@ import { ScreenLoading } from "@/components/custom/screen-loading"
 import Footer from "@/components/layouts/footer"
 import Header from "@/components/layouts/header"
 import { useEffect, useState } from "react"
+import { SessionProvider } from "next-auth/react"
 
 export default function DefaultLayout({
     children,
@@ -23,10 +24,12 @@ export default function DefaultLayout({
 
 
     return (
-        <div className="flex min-h-screen flex-col">
-            <Header />
-            {children}
-            <Footer />
-        </div>
+        <SessionProvider>
+            <div className="flex min-h-screen flex-col">
+                <Header />
+                {children}
+                <Footer />
+            </div>
+        </SessionProvider>
     )
 }

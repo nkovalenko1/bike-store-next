@@ -8,7 +8,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-    const mainImage = product.images?.[0] || '/images/placeholder.png'
+    const productImages = Array.isArray(product?.images) ? product.images : []
+    const mainImage = productImages[0] || '/images/placeholder.png'
     const price = product.variants?.[0]?.price ?? product.price
 
     return (

@@ -84,14 +84,15 @@ export default function ProductDetail() {
     (v) => v.id === selectedVariant
   );
   const price = currentVariant?.price ?? product.price;
+  const productImages = Array.isArray(product.images) ? product.images : [];
   const images = currentVariant?.image
-    ? [currentVariant.image, ...product.images]
-    : product.images;
+    ? [currentVariant.image, ...productImages]
+    : productImages;
 
   return (
     <>
       <div className="flex flex-col lg:flex-row">
-        <CycleDetailSwiper images={images || product.images} />
+        <CycleDetailSwiper images={images.length > 0 ? images : ['/images/placeholder.png']} />
         <div className="container shrink-0 space-y-5 px-4 pt-12 lg:w-[500px] lg:max-w-none lg:space-y-[30px] lg:px-14 xl:w-[600px] xl:py-[100px] 2xl:w-[716px]">
           <div>
             <h1 className="mb-2 line-clamp-2 text-2xl font-bold sm:text-3xl md:text-4xl/tight lg:mb-4 xl:mb-[30px] xl:text-[50px]/[60px]">

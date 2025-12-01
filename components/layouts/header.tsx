@@ -25,17 +25,51 @@ import {
 import { Headphones, LogOut, Menu, Search, ShoppingBag, User, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { logout } from '@/lib/api/auth'
+import { useAuthStore } from '@/lib/stores/auth-store'
+import { useCartStore } from '@/lib/stores/cart-store'
 
 export default function Header() {
     const pathName = usePathname()
+    const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
+    const { data: session, status } = useSession()
+    const { user, setUser, logout: logoutStore } = useAuthStore()
+    const { getItemCount } = useCartStore()
 
     useEffect(() => {
         setIsOpen(false)
     }, [pathName])
+
+    useEffect(() => {
+        if (session?.user) {
+            setUser({
+                id: session.user.id,
+                email: session.user.email,
+                name: session.user.name,
+                role: session.user.role,
+            })
+        } else if (status === 'unauthenticated') {
+            logoutStore()
+        }
+    }, [session, status, setUser, logoutStore])
+
+    const handleLogout = async () => {
+        try {
+            await logout()
+            logoutStore()
+            router.push('/')
+        } catch (error) {
+            console.error('Ошибка выхода:', error)
+        }
+    }
+
+    const isAuthenticated = !!user || !!session?.user
+    const displayName = user?.name || session?.user?.name || user?.email || session?.user?.email
 
     return (
         <>
@@ -110,9 +144,11 @@ export default function Header() {
                                         type="button"
                                         className="relative shrink-0 text-black transition hover:text-gray/90"
                                     >
-                                        <span className="absolute -right-2 -top-2 grid h-[18px] min-w-[18px] place-content-center rounded-full bg-gray px-1.5 py-0.5 text-sm font-bold text-white">
-                                            1
-                                        </span>
+                                        {getItemCount() > 0 && (
+                                            <span className="absolute -right-2 -top-2 grid h-[18px] min-w-[18px] place-content-center rounded-full bg-gray px-1.5 py-0.5 text-xs font-bold text-white">
+                                                {getItemCount()}
+                                            </span>
+                                        )}
                                         <ShoppingBag className="size-5 shrink-0" />
                                         <span className="sr-only">
                                             Add cart
@@ -121,41 +157,65 @@ export default function Header() {
                                 }
                             />
 
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <button
-                                        type="button"
-                                        className="hidden size-5 shrink-0 text-black outline-none transition hover:text-gray/90 lg:block"
+                            {isAuthenticated ? (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button
+                                            type="button"
+                                            className="hidden size-5 shrink-0 text-black outline-none transition hover:text-gray/90 lg:block"
+                                        >
+                                            <User className="size-5 shrink-0" />
+                                            <span className="sr-only">User</span>
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                        align="end"
+                                        sideOffset={12}
+                                        className="min-w-[200px] space-y-1 rounded-lg p-1.5 text-sm font-medium"
                                     >
-                                        <User className="size-5 shrink-0" />
-                                        <span className="sr-only">User</span>
-                                    </button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                    align="end"
-                                    sideOffset={12}
-                                    className="min-w-[200px] space-y-1 rounded-lg p-1.5 text-sm font-medium"
+                                        {displayName && (
+                                            <div className="px-3 py-2 text-xs text-gray-600 border-b border-gray-100">
+                                                {displayName}
+                                            </div>
+                                        )}
+                                        <DropdownMenuItem className="p-0">
+                                            <Link
+                                                href="/orders"
+                                                className={`flex w-full items-center gap-1.5 rounded-lg px-3 py-2 ${pathName === '/orders' && '!bg-gray-100'}`}
+                                            >
+                                                <ShoppingBag className="size-[18px] shrink-0" />
+                                                Мои заказы
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem className="p-0">
+                                            <Link
+                                                href="/contact-us"
+                                                className={`flex w-full items-center gap-1.5 rounded-lg px-3 py-2 ${pathName === '/contact-us' && '!bg-gray-100'}`}
+                                            >
+                                                <Headphones className="size-[18px] shrink-0" />
+                                                Help Center
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem className="p-0">
+                                            <button
+                                                type="button"
+                                                onClick={handleLogout}
+                                                className="flex w-full items-center gap-1.5 rounded-lg px-3 py-2 text-left hover:bg-gray-100"
+                                            >
+                                                <LogOut className="size-[18px] shrink-0" />
+                                                Sign out
+                                            </button>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    className="hidden text-sm font-medium text-black transition hover:text-gray/90 lg:block"
                                 >
-                                    <DropdownMenuItem className="p-0">
-                                        <Link
-                                            href="/contact-us"
-                                            className={`flex w-full items-center gap-1.5 rounded-lg px-3 py-2 ${pathName === '/contact-us' && '!bg-gray-100'}`}
-                                        >
-                                            <Headphones className="size-[18px] shrink-0" />
-                                            Help Center
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="p-0">
-                                        <Link
-                                            href="#"
-                                            className={`flex w-full items-center gap-1.5 rounded-lg px-3 py-2 ${pathName === '#' && '!bg-gray-100'}`}
-                                        >
-                                            <LogOut className="size-[18px] shrink-0" />
-                                            Sign out
-                                        </Link>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                    Sign in
+                                </Link>
+                            )}
 
                             <div className="grid place-content-center lg:hidden">
                                 <Sheet open={isOpen} onOpenChange={setIsOpen}>

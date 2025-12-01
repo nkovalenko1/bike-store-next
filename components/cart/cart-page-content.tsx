@@ -103,8 +103,8 @@ export default function CartPageContent() {
                     </span>
                     {cartItem.product?.images?.[0] && (
                       <Image
-                        src={cartItem.product.images[0]}
-                        alt={cartItem.product.name}
+                        src={cartItem.product.images?.[0] || '/images/placeholder.png'}
+                        alt={cartItem.product?.name || 'Product'}
                         className="h-full w-full object-contain transition group-hover:opacity-80"
                         width={940}
                         height={700}

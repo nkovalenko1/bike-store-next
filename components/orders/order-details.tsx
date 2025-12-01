@@ -45,8 +45,8 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
                 {item.product?.images?.[0] && (
                   <Link href={`/cycle-details/${item.productId}`}>
                     <Image
-                      src={item.product.images[0]}
-                      alt={item.product.name}
+                      src={item.product.images?.[0] || '/images/placeholder.png'}
+                      alt={item.product?.name || 'Product'}
                       width={80}
                       height={80}
                       className="rounded-lg object-cover"
