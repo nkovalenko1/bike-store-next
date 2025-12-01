@@ -1,27 +1,28 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-export interface CartItem {
-  id: string;
-  productId: string;
-  variantId?: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
-  color?: string;
-}
+import type { CartItem } from "@/types/product";
+import {
+  getCart,
+  addToCart,
+  updateCartItem,
+  removeCartItem,
+  clearCart as clearCartApi,
+} from "@/lib/api/cart";
+import type { AddToCartInput } from "@/lib/validations/cart";
 
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
+  isLoading: boolean;
+  error: string | null;
 }
 
 interface CartActions {
-  addItem: (item: Omit<CartItem, "id">) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
+  syncWithServer: () => Promise<void>;
+  addItem: (item: AddToCartInput) => Promise<void>;
+  removeItem: (id: string) => Promise<void>;
+  updateQuantity: (id: string, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
@@ -31,50 +32,86 @@ interface CartActions {
 
 type CartStore = CartState & CartActions;
 
-const generateCartItemId = (productId: string, variantId?: string): string => {
-  return variantId ? `${productId}-${variantId}` : productId;
-};
-
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
       isOpen: false,
+      isLoading: false,
+      error: null,
 
-      addItem: (item) => {
-        const id = generateCartItemId(item.productId, item.variantId);
-        const existingItem = get().items.find((i) => i.id === id);
-
-        if (existingItem) {
+      syncWithServer: async () => {
+        try {
+          set({ isLoading: true, error: null });
+          const items = await getCart();
+          set({ items, isLoading: false });
+        } catch (error) {
           set({
-            items: get().items.map((i) =>
-              i.id === id ? { ...i, quantity: i.quantity + item.quantity } : i
-            ),
+            error: error instanceof Error ? error.message : "Ошибка загрузки корзины",
+            isLoading: false,
           });
-        } else {
-          set({ items: [...get().items, { ...item, id }] });
         }
       },
 
-      removeItem: (id) => {
-        set({ items: get().items.filter((item) => item.id !== id) });
+      addItem: async (item: AddToCartInput) => {
+        try {
+          set({ isLoading: true, error: null });
+          await addToCart(item);
+          await get().syncWithServer();
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : "Ошибка добавления в корзину",
+            isLoading: false,
+          });
+          throw error;
+        }
       },
 
-      updateQuantity: (id, quantity) => {
+      removeItem: async (id: string) => {
+        try {
+          set({ isLoading: true, error: null });
+          await removeCartItem(id);
+          await get().syncWithServer();
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : "Ошибка удаления из корзины",
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      updateQuantity: async (id: string, quantity: number) => {
         if (quantity <= 0) {
-          get().removeItem(id);
+          await get().removeItem(id);
           return;
         }
 
-        set({
-          items: get().items.map((item) =>
-            item.id === id ? { ...item, quantity } : item
-          ),
-        });
+        try {
+          set({ isLoading: true, error: null });
+          await updateCartItem(id, { quantity });
+          await get().syncWithServer();
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : "Ошибка обновления количества",
+            isLoading: false,
+          });
+          throw error;
+        }
       },
 
-      clearCart: () => {
-        set({ items: [] });
+      clearCart: async () => {
+        try {
+          set({ isLoading: true, error: null });
+          await clearCartApi();
+          set({ items: [], isLoading: false });
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : "Ошибка очистки корзины",
+            isLoading: false,
+          });
+          throw error;
+        }
       },
 
       openCart: () => set({ isOpen: true }),
@@ -82,10 +119,10 @@ export const useCartStore = create<CartStore>()(
       toggleCart: () => set({ isOpen: !get().isOpen }),
 
       getTotal: () => {
-        return get().items.reduce(
-          (total, item) => total + item.price * item.quantity,
-          0
-        );
+        return get().items.reduce((total, item) => {
+          const price = item.variant?.price ?? item.product?.price ?? 0;
+          return total + price * item.quantity;
+        }, 0);
       },
 
       getItemCount: () => {

@@ -4,26 +4,12 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination } from 'swiper/modules'
 import 'swiper/css'
 import Image from 'next/image'
-import { IProductDetail } from '@/types/product'
 
-const ProductDetail: IProductDetail[] = [
-    {
-        id: 1,
-        image: '/images/cycle-hero-img1.png',
-        alt: 'Cycle',
-    },
-    {
-        id: 1,
-        image: '/images/cycle-hero-img2.png',
-        alt: 'Cycle',
-    },
-    {
-        id: 1,
-        image: '/images/cycle-hero-img3.png',
-        alt: 'Cycle',
-    },
-]
-export default function CycleDetailSwiper() {
+interface CycleDetailSwiperProps {
+    images?: string[]
+}
+
+export default function CycleDetailSwiper({ images = ['/images/cycle-hero-img1.png'] }: CycleDetailSwiperProps) {
     return (
         <div className="relative flex h-full grow items-center justify-center bg-gray-100 px-4 md:px-12 lg:w-[calc(100%-500px)] xl:w-[calc(100%-600px)] 2xl:w-[calc(100%-716px)] 2xl:px-24">
             <button
@@ -54,15 +40,15 @@ export default function CycleDetailSwiper() {
                     clickable: true,
                 }}
             >
-                {ProductDetail.map((ProductDetail, index) => (
+                {images.map((image, index) => (
                     <SwiperSlide
                         key={index}
                         className="!flex items-center justify-center"
                     >
                         <div className="flex h-72 items-center justify-center sm:h-96 lg:h-[492px]">
                             <Image
-                                src={ProductDetail.image}
-                                alt={ProductDetail.alt}
+                                src={image}
+                                alt={`Product image ${index + 1}`}
                                 className="h-full w-full object-contain"
                                 width={940}
                                 height={700}

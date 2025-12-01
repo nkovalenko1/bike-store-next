@@ -3,27 +3,52 @@
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Minus, Plus } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
-// type IVariants = 'default' | 'outline' | 'black'
+interface ProductCounterProps {
+    variant?: 'default' | 'outline' | 'black'
+    value?: number
+    onChange?: (value: number) => void
+    min?: number
+    max?: number
+}
 
-function ProductCounter({ variant = 'black' }) {
-    const [count, setCount] = useState(1)
+function ProductCounter({ 
+    variant = 'black',
+    value: controlledValue,
+    onChange,
+    min = 1,
+    max
+}: ProductCounterProps) {
+    const [count, setCount] = useState(controlledValue ?? 1)
+
+    useEffect(() => {
+        if (controlledValue !== undefined) {
+            setCount(controlledValue)
+        }
+    }, [controlledValue])
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = Number(event.target.value)
-        if (!isNaN(newValue) && newValue >= 0) {
+        if (!isNaN(newValue) && newValue >= min && (max === undefined || newValue <= max)) {
             setCount(newValue)
+            onChange?.(newValue)
         }
     }
 
     const handleIncrement = () => {
-        setCount(count + 1)
+        const newValue = count + 1
+        if (max === undefined || newValue <= max) {
+            setCount(newValue)
+            onChange?.(newValue)
+        }
     }
 
     const handleDecrement = () => {
-        if (count > 1) {
-            setCount(count - 1)
+        if (count > min) {
+            const newValue = count - 1
+            setCount(newValue)
+            onChange?.(newValue)
         }
     }
 

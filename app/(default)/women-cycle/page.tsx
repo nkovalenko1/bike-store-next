@@ -1,18 +1,8 @@
 import FeedbackSwiper from '@/components/custom/feedback-swiper'
-import ProductCard from '@/components/custom/product-card'
+import ProductList from '@/components/products/product-list'
 import RideBanner from '@/components/custom/ridebanner'
 import { Button } from '@/components/ui/button'
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination'
 import helper from '@/lib/helper'
-import { ICard } from '@/types/product'
 import { ArrowUpRight } from 'lucide-react'
 import { Metadata } from 'next'
 import Image from 'next/image'
@@ -33,92 +23,6 @@ export const metadata: Metadata = {
     },
 }
 
-const card: ICard[] = [
-    {
-        id: 1,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle1.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 2,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle2.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 3,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle1.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 4,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle2.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 5,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle1.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 6,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle2.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 7,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle1.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 8,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle2.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 9,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle1.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 10,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle2.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 11,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle1.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-    {
-        id: 12,
-        name: 'Velocity Roadster',
-        image: '/images/women-cycle2.png',
-        alt: 'Velocity Roadster',
-        description: 'The Ultimate Ride for Road Enthusiasts',
-    },
-]
 export default function WomenCycle() {
     return (
         <>
@@ -176,38 +80,7 @@ export default function WomenCycle() {
             </div>
 
             <div className="pt-14 lg:pt-20">
-                <div className="mx-auto grid max-w-[1852px] gap-4 px-4 sm:grid-cols-2 md:grid-cols-3 xl:gap-10 2xl:grid-cols-4 2xl:gap-14">
-                    {card.map((card) => (
-                        <ProductCard key={card.id} card={card} />
-                    ))}
-                </div>
-                <Pagination className="mt-10 md:mt-14">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious href="#" />
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationLink href="#" isActive>
-                                1
-                            </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationLink href="#">2</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationLink href="#">3</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationEllipsis />
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationLink href="#">10</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationNext href="#" />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+                <ProductList initialCategory="women" />
             </div>
 
             <FeedbackSwiper />
