@@ -27,6 +27,36 @@ export interface Product {
 
 export interface ProductWithVariants extends Product {
   variants: ProductVariant[];
+  specification?: ProductSpecification | null;
+  categoryFeatures?: CategoryFeatureSection[] | null;
+}
+
+export interface ProductSpecification {
+  id: string;
+  productId: string;
+  specs: Record<string, string>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface FeatureItem {
+  label: string;
+  value: string;
+}
+
+export interface CategoryFeatureSection {
+  title: string;
+  description: string;
+  image: string;
+  items: FeatureItem[];
+}
+
+export interface CategoryFeature {
+  id: string;
+  category: string;
+  features: CategoryFeatureSection[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CartItem {

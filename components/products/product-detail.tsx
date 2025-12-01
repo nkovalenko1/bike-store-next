@@ -14,6 +14,8 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import ErrorMessage from "@/components/ui/error-message";
 import NotFound from "@/components/ui/not-found";
 import { useCartStore } from "@/lib/stores/cart-store";
+import ProductFeatures from "@/components/products/product-features";
+import ProductSpecifications from "@/components/products/product-specifications";
 
 export default function ProductDetail() {
   const params = useParams();
@@ -183,6 +185,11 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+
+      <ProductFeatures features={product.categoryFeatures || null} />
+      <ProductSpecifications
+        specifications={product.specification?.specs || null}
+      />
     </>
   );
 }

@@ -34,9 +34,10 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  variants  ProductVariant[]
-  cartItems CartItem[]
-  orderItems OrderItem[]
+  variants       ProductVariant[]
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  specification  ProductSpecification?
 }
 
 model ProductVariant {
@@ -142,5 +143,28 @@ enum PaymentStatus {
 enum UserRole {
   USER
   ADMIN
+}
+
+model ProductSpecification {
+  id        String   @id @default(cuid())
+  productId String   @unique
+  specs     Json     // JSON object with specification key-value pairs
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model CategoryFeature {
+  id        String   @id @default(cuid())
+  category  String
+  features  Json     // JSON array of feature sections
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([category])
+  @@index([category])
 }
 

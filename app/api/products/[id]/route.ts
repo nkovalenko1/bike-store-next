@@ -18,14 +18,25 @@ export async function GET(request: Request, { params }: Params) {
 
     const product = await prisma.product.findUnique({
       where: { id },
-      include: { variants: true },
+      include: { 
+        variants: true,
+        specification: true,
+      },
     });
 
     if (!product) {
       return notFoundResponse("Товар не найден");
     }
 
-    return successResponse(product);
+    // Fetch category features for this product's category
+    const categoryFeature = await prisma.categoryFeature.findUnique({
+      where: { category: product.category },
+    });
+
+    return successResponse({
+      ...product,
+      categoryFeatures: categoryFeature?.features || null,
+    });
   } catch (error) {
     return handleApiError(error);
   }
