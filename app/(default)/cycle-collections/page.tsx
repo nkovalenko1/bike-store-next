@@ -50,7 +50,7 @@ export default function CycleCollections() {
                                 Your journey to the genuine begins here.
                             </p>
                             <div className="mt-7 flex flex-wrap items-center gap-5">
-                                <Link href="cycle-details">
+                                <Link href="/cycle-details">
                                     <Button type="button" className="btn">
                                         Preorder now
                                     </Button>
