@@ -8,6 +8,7 @@ import {
   removeCartItem,
   clearCart as clearCartApi,
 } from "@/lib/api/cart";
+import { ApiError } from "@/lib/api/client";
 import type { AddToCartInput } from "@/lib/validations/cart";
 
 interface CartState {
@@ -46,6 +47,11 @@ export const useCartStore = create<CartStore>()(
           const items = await getCart();
           set({ items, isLoading: false });
         } catch (error) {
+          if (error instanceof ApiError && error.status === 401) {
+            // Clear stale cart data if the session expired
+            set({ items: [], isLoading: false, error: null });
+            return;
+          }
           set({
             error: error instanceof Error ? error.message : "Ошибка загрузки корзины",
             isLoading: false,
